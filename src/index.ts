@@ -15,6 +15,10 @@ export function appCredentialsFromString(str: string): AppCredentials {
   return JSON.parse(Buffer.from(str, 'base64').toString('utf-8')) as any as AppCredentials;
 }
 
+export function bundleAppCredentials(appCreds: AppCredentials): string {
+  return Buffer.from(JSON.stringify(appCreds), 'utf-8').toString('base64');
+}
+
 export async function getTokenForRepo(repo: RepoInfo, appCreds: AppCredentials) {
   const auth = createAppAuth({
     appId: appCreds.appId,
