@@ -6,7 +6,8 @@
   "author": "Samuel Attard <sam@electronjs.org>",
   "license": "MIT",
   "scripts": {
-    "prepublishOnly": "tsc"
+    "prepublishOnly": "tsc",
+    "test": "exit 0"
   },
   "devDependencies": {
     "@continuous-auth/semantic-release-npm": "^2.0.0",
