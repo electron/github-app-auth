@@ -32,15 +32,20 @@ export async function getTokenForRepo(repo: RepoInfo, appCreds: AppCredentials) 
     auth: appAuth.token,
   });
 
-  const installations = await octokit.apps.listInstallations();
-  if (installations.data.length !== 1) return null;
+  try {
+    const installation = await octokit.apps.getRepoInstallation({
+      owner: repo.owner,
+      repo: repo.name
+    });
 
-  if (installations.data[0].account?.login !== repo.owner) return null;
+    const installationAuth = await auth({
+      type: 'installation',
+      installationId: installation.data.id,
+    });
 
-  const installationAuth = await auth({
-    type: 'installation',
-    installationId: installations.data[0].id,
-  });
-
-  return installationAuth.token;
+    return installationAuth.token;
+  } catch (err) {
+    if (err.status !== 404) throw err;
+    return null;
+  }
 }
