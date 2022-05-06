@@ -20,6 +20,19 @@ export function bundleAppCredentials(appCreds: AppCredentials): string {
 }
 
 export async function getTokenForRepo(repo: RepoInfo, appCreds: AppCredentials) {
+  const authOptions = await getAuthOptionsForRepo(repo, appCreds);
+  if (!authOptions) return null;
+
+  const { token } = await (authOptions.authStrategy(authOptions.auth))(authOptions.auth);
+  return token;
+}
+
+interface OctokitAuthOptions {
+  auth: object;
+  authStrategy: Function;
+}
+
+export async function getAuthOptionsForRepo(repo: RepoInfo, appCreds: AppCredentials): Promise<OctokitAuthOptions | null> {
   const auth = createAppAuth({
     appId: appCreds.appId,
     privateKey: appCreds.privateKey,
@@ -38,13 +51,16 @@ export async function getTokenForRepo(repo: RepoInfo, appCreds: AppCredentials) 
       repo: repo.name
     });
 
-    const installationAuth = await auth({
-      type: 'installation',
-      installationId: installation.data.id,
-    });
-
-    return installationAuth.token;
-  } catch (err) {
+    return {
+      auth: {
+        type: 'installation',
+        appId: appCreds.appId,
+        privateKey: appCreds.privateKey,
+        installationId: installation.data.id,
+      },
+      authStrategy: createAppAuth,
+    };
+  } catch (err: any) {
     if (err.status !== 404) throw err;
     return null;
   }
