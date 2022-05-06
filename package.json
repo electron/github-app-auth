@@ -10,7 +10,7 @@
   },
   "scripts": {
     "prepublishOnly": "tsc",
-    "test": "exit 0"
+    "test": "yarn tsc"
   },
   "devDependencies": {
     "@continuous-auth/semantic-release-npm": "^2.0.0",
