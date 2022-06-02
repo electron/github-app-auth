@@ -9,8 +9,9 @@
     "github-app-auth-build": "dist/bin.js"
   },
   "scripts": {
+    "lint": "prettier --check src/**/*.ts",
     "prepublishOnly": "tsc",
-    "test": "yarn tsc"
+    "test": "yarn lint && yarn tsc"
   },
   "devDependencies": {
     "@continuous-auth/semantic-release-npm": "^2.0.0",

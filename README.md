@@ -53,3 +53,9 @@ const token = await getTokenForRepo({
 
 // token is now a valid github auth token
 ```
+
+#### With raw tokens on the CLI
+
+```bash
+gh_token=$(npx @electron/github-app-auth --creds=$MY_GITHUB_APP_CREDS --owner=electron --repo=electron)
+```

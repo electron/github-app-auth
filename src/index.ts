@@ -23,8 +23,8 @@ export async function getTokenForRepo(repo: RepoInfo, appCreds: AppCredentials) 
   const authOptions = await getAuthOptionsForRepo(repo, appCreds);
   if (!authOptions) return null;
 
-  const { token } = await (authOptions.authStrategy(authOptions.auth))(authOptions.auth);
-  return token;
+  const { token } = await authOptions.authStrategy(authOptions.auth)(authOptions.auth);
+  return token as string;
 }
 
 interface OctokitAuthOptions {
@@ -32,7 +32,10 @@ interface OctokitAuthOptions {
   authStrategy: Function;
 }
 
-export async function getAuthOptionsForRepo(repo: RepoInfo, appCreds: AppCredentials): Promise<OctokitAuthOptions | null> {
+export async function getAuthOptionsForRepo(
+  repo: RepoInfo,
+  appCreds: AppCredentials,
+): Promise<OctokitAuthOptions | null> {
   const auth = createAppAuth({
     appId: appCreds.appId,
     privateKey: appCreds.privateKey,
@@ -48,7 +51,7 @@ export async function getAuthOptionsForRepo(repo: RepoInfo, appCreds: AppCredent
   try {
     const installation = await octokit.apps.getRepoInstallation({
       owner: repo.owner,
-      repo: repo.name
+      repo: repo.name,
     });
 
     return {
