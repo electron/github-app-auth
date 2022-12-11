@@ -36,6 +36,18 @@ export async function getTokenForRepo(
   return token as string;
 }
 
+export async function getTokenForOrg(
+  org: string,
+  appCreds: AppCredentials,
+  authNarrowing: AuthNarrowing = {},
+) {
+  const authOptions = await getAuthOptionsForOrg(org, appCreds, authNarrowing);
+  if (!authOptions) return null;
+
+  const { token } = await authOptions.authStrategy(authOptions.auth)(authOptions.auth);
+  return token as string;
+}
+
 interface OctokitAuthOptions {
   auth: object;
   authStrategy: Function;
@@ -45,6 +57,35 @@ export async function getAuthOptionsForRepo(
   repo: RepoInfo,
   appCreds: AppCredentials,
   authNarrowing: AuthNarrowing = {},
+) {
+  return await getAuthOptionsForInstallationId(appCreds, authNarrowing, async (octokit) => {
+    const installation = await octokit.apps.getRepoInstallation({
+      owner: repo.owner,
+      repo: repo.name,
+    });
+
+    return installation.data.id;
+  });
+}
+
+export async function getAuthOptionsForOrg(
+  org: string,
+  appCreds: AppCredentials,
+  authNarrowing: AuthNarrowing = {},
+) {
+  return await getAuthOptionsForInstallationId(appCreds, authNarrowing, async (octokit) => {
+    const installation = await octokit.apps.getOrgInstallation({
+      org,
+    });
+
+    return installation.data.id;
+  });
+}
+
+async function getAuthOptionsForInstallationId(
+  appCreds: AppCredentials,
+  authNarrowing: AuthNarrowing = {},
+  installationIdFetcher: (octokit: Octokit) => Promise<number>,
 ): Promise<OctokitAuthOptions | null> {
   const auth = createAppAuth({
     appId: appCreds.appId,
@@ -59,17 +100,14 @@ export async function getAuthOptionsForRepo(
   });
 
   try {
-    const installation = await octokit.apps.getRepoInstallation({
-      owner: repo.owner,
-      repo: repo.name,
-    });
+    const installationId = await installationIdFetcher(octokit);
 
     const strategyOptions: InstallationAuthOptions = {
       ...authNarrowing,
       type: 'installation',
       appId: appCreds.appId,
       privateKey: appCreds.privateKey,
-      installationId: installation.data.id,
+      installationId,
     };
     return {
       auth: strategyOptions,
