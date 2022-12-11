@@ -1,4 +1,4 @@
-import { createAppAuth } from '@octokit/auth-app';
+import { createAppAuth, InstallationAuthOptions } from '@octokit/auth-app';
 import { Octokit } from '@octokit/rest';
 
 export interface RepoInfo {
@@ -11,6 +11,11 @@ export interface AppCredentials {
   privateKey: string;
 }
 
+export type AuthNarrowing = Pick<
+  InstallationAuthOptions,
+  'repositoryIds' | 'repositoryNames' | 'permissions'
+>;
+
 export function appCredentialsFromString(str: string): AppCredentials {
   return JSON.parse(Buffer.from(str, 'base64').toString('utf-8')) as any as AppCredentials;
 }
@@ -19,8 +24,12 @@ export function bundleAppCredentials(appCreds: AppCredentials): string {
   return Buffer.from(JSON.stringify(appCreds), 'utf-8').toString('base64');
 }
 
-export async function getTokenForRepo(repo: RepoInfo, appCreds: AppCredentials) {
-  const authOptions = await getAuthOptionsForRepo(repo, appCreds);
+export async function getTokenForRepo(
+  repo: RepoInfo,
+  appCreds: AppCredentials,
+  authNarrowing: AuthNarrowing = {},
+) {
+  const authOptions = await getAuthOptionsForRepo(repo, appCreds, authNarrowing);
   if (!authOptions) return null;
 
   const { token } = await authOptions.authStrategy(authOptions.auth)(authOptions.auth);
@@ -35,6 +44,7 @@ interface OctokitAuthOptions {
 export async function getAuthOptionsForRepo(
   repo: RepoInfo,
   appCreds: AppCredentials,
+  authNarrowing: AuthNarrowing = {},
 ): Promise<OctokitAuthOptions | null> {
   const auth = createAppAuth({
     appId: appCreds.appId,
@@ -54,13 +64,15 @@ export async function getAuthOptionsForRepo(
       repo: repo.name,
     });
 
+    const strategyOptions: InstallationAuthOptions = {
+      ...authNarrowing,
+      type: 'installation',
+      appId: appCreds.appId,
+      privateKey: appCreds.privateKey,
+      installationId: installation.data.id,
+    };
     return {
-      auth: {
-        type: 'installation',
-        appId: appCreds.appId,
-        privateKey: appCreds.privateKey,
-        installationId: installation.data.id,
-      },
+      auth: strategyOptions,
       authStrategy: createAppAuth,
     };
   } catch (err: any) {
