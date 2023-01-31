@@ -14,7 +14,7 @@ information to generate tokens.  You need both a private key for your
 application and the application ID.
 
 ```bash
-npx @electron/github-app-auth --creds=my-private.key.pem --app-id=12345
+npx @electron/github-app-auth --cert=my-private.key.pem --app-id=12345
 ```
 
 This command will output a base64 encoded blob which you should store in your
