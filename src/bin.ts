@@ -21,12 +21,13 @@ const creds = getArg('creds');
 const org = getArg('org');
 const owner = getArg('owner');
 const repo = getArg('repo');
+const repoArgs = owner && repo;
 
 // For generating a creds bundle
 const cert = getArg('cert');
 const appId = getArg('app-id');
 
-if (creds && (org || (owner && repo))) {
+if (creds && ((org && !repoArgs) || (repoArgs && !org))) {
   const appCreds = appCredentialsFromString(creds);
 
   (org ? getTokenForOrg(org, appCreds) : getTokenForRepo({ owner: owner!, name: repo! }, appCreds))
