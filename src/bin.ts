@@ -2,7 +2,12 @@
 
 import * as fs from 'fs';
 
-import { appCredentialsFromString, bundleAppCredentials, getTokenForRepo } from './';
+import {
+  appCredentialsFromString,
+  bundleAppCredentials,
+  getTokenForOrg,
+  getTokenForRepo,
+} from './';
 
 const args = process.argv;
 
@@ -13,21 +18,19 @@ function getArg(name: string) {
 
 // For getting a token
 const creds = getArg('creds');
+const org = getArg('org');
 const owner = getArg('owner');
 const repo = getArg('repo');
+const repoArgs = owner && repo;
 
 // For generating a creds bundle
 const cert = getArg('cert');
 const appId = getArg('app-id');
 
-if (creds && owner && repo) {
-  getTokenForRepo(
-    {
-      owner,
-      name: repo,
-    },
-    appCredentialsFromString(creds),
-  )
+if (creds && ((org && !repoArgs) || (repoArgs && !org))) {
+  const appCreds = appCredentialsFromString(creds);
+
+  (org ? getTokenForOrg(org, appCreds) : getTokenForRepo({ owner: owner!, name: repo! }, appCreds))
     .then((token) => {
       if (token) {
         console.log(token);
@@ -58,6 +61,7 @@ if (creds && owner && repo) {
 } else {
   console.error(`Invalid Usage:
 github-app-auth --cert=private.key --app-id=12345
+github-app-auth --creds=CREDS_BUNDLE --org=electron
 github-app-auth --creds=CREDS_BUNDLE --owner=electron --repo=electron`);
   process.exit(1);
 }
