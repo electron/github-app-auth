@@ -112,7 +112,7 @@ async function getAuthOptionsForInstallationId(
 
   const octokit = new Octokit({
     auth: appAuth.token,
-    request,
+    baseUrl: request?.endpoint.DEFAULTS.baseUrl,
   });
 
   try {
