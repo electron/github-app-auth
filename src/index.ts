@@ -1,4 +1,5 @@
 import { createAppAuth, InstallationAuthOptions } from '@octokit/auth-app';
+import { RequestInterface } from '@octokit/auth-app/dist-types/types';
 import { Octokit } from '@octokit/rest';
 
 export interface RepoInfo {
@@ -57,39 +58,53 @@ export async function getAuthOptionsForRepo(
   repo: RepoInfo,
   appCreds: AppCredentials,
   authNarrowing: AuthNarrowing = {},
+  request?: RequestInterface,
 ) {
-  return await getAuthOptionsForInstallationId(appCreds, authNarrowing, async (octokit) => {
-    const installation = await octokit.apps.getRepoInstallation({
-      owner: repo.owner,
-      repo: repo.name,
-    });
+  return await getAuthOptionsForInstallationId(
+    appCreds,
+    authNarrowing,
+    async (octokit) => {
+      const installation = await octokit.apps.getRepoInstallation({
+        owner: repo.owner,
+        repo: repo.name,
+      });
 
-    return installation.data.id;
-  });
+      return installation.data.id;
+    },
+    request,
+  );
 }
 
 export async function getAuthOptionsForOrg(
   org: string,
   appCreds: AppCredentials,
   authNarrowing: AuthNarrowing = {},
+  request?: RequestInterface,
 ) {
-  return await getAuthOptionsForInstallationId(appCreds, authNarrowing, async (octokit) => {
-    const installation = await octokit.apps.getOrgInstallation({
-      org,
-    });
+  return await getAuthOptionsForInstallationId(
+    appCreds,
+    authNarrowing,
+    async (octokit) => {
+      const installation = await octokit.apps.getOrgInstallation({
+        org,
+      });
 
-    return installation.data.id;
-  });
+      return installation.data.id;
+    },
+    request,
+  );
 }
 
 async function getAuthOptionsForInstallationId(
   appCreds: AppCredentials,
   authNarrowing: AuthNarrowing = {},
   installationIdFetcher: (octokit: Octokit) => Promise<number>,
+  request?: RequestInterface,
 ): Promise<OctokitAuthOptions | null> {
   const auth = createAppAuth({
     appId: appCreds.appId,
     privateKey: appCreds.privateKey,
+    request,
   });
   const appAuth = await auth({
     type: 'app',
@@ -97,6 +112,7 @@ async function getAuthOptionsForInstallationId(
 
   const octokit = new Octokit({
     auth: appAuth.token,
+    request,
   });
 
   try {
