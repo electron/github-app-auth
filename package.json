@@ -17,7 +17,6 @@
     "test": "yarn lint && yarn tsc"
   },
   "devDependencies": {
-    "@continuous-auth/semantic-release-npm": "^3.0.0",
     "@types/node": "^17.0.31",
     "prettier": "^2.6.2",
     "typescript": "^4.6.4"
