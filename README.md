@@ -14,6 +14,9 @@ a CLI tool to generate a "credential bundle" that contains the requisite
 information to generate tokens.  You need both a private key for your
 application and the application ID.
 
+* You can find your app's ID on the settings page for your GitHub App.
+* To download your app's private key, see [Managing private keys for GitHub Apps](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/managing-private-keys-for-github-apps).
+
 ```bash
 npx @electron/github-app-auth --cert=my-private.key.pem --app-id=12345
 ```
