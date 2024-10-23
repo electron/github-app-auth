@@ -5,6 +5,14 @@
   "main": "dist/index.js",
   "author": "Samuel Attard <sam@electronjs.org>",
   "license": "MIT",
+  "homepage": "https://github.com/electron/github-app-auth",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/electron/github-app-auth.git"
+  },
+  "bugs": {
+    "url": "https://github.com/electron/github-app-auth/issues"
+  },
   "engines": {
     "node": ">=14.0.0"
   },
