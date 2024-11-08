@@ -2,7 +2,7 @@
 
 > Gets an auth token for a repo via a GitHub app installation
 
-[![CircleCI](https://circleci.com/gh/electron/github-app-auth.svg?style=shield)](https://circleci.com/gh/electron/github-app-auth)
+[![Test](https://github.com/electron/github-app-auth/actions/workflows/test.yml/badge.svg)](https://github.com/electron/github-app-auth/actions/workflows/test.yml)
 [![npm version](https://img.shields.io/npm/v/@electron/github-app-auth.svg)](https://npmjs.org/package/@electron/github-app-auth)
 
 ## Usage
