@@ -1,6 +1,6 @@
 import { createAppAuth, InstallationAuthOptions } from '@octokit/auth-app';
-import { RequestInterface } from '@octokit/auth-app/dist-types/types';
 import { Octokit } from '@octokit/rest';
+import { RequestInterface } from '@octokit/types';
 
 export interface RepoInfo {
   owner: string;
