@@ -2,7 +2,8 @@
   "name": "@electron/github-app-auth",
   "version": "0.0.0-development",
   "description": "Gets an auth token for a repo via a GitHub app installation",
-  "main": "dist/index.js",
+  "type": "module",
+  "exports": "./dist/index.js",
   "author": "Samuel Attard <sam@electronjs.org>",
   "license": "MIT",
   "homepage": "https://github.com/electron/github-app-auth",
@@ -17,24 +18,27 @@
     "provenance": true
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=22.12.0"
   },
   "bin": {
     "github-app-auth-build": "dist/bin.js"
   },
   "scripts": {
     "lint": "prettier --check src/**/*.ts",
+    "lint:fix": "prettier --write src/**/*.ts",
     "prepublishOnly": "tsc",
     "test": "yarn lint && yarn tsc"
   },
   "devDependencies": {
+    "@octokit/types": "^13.8.0",
+    "@tsconfig/node22": "^22.0.0",
     "@types/node": "^22.9.0",
     "prettier": "^3.3.3",
     "typescript": "^5.6.3"
   },
   "dependencies": {
-    "@octokit/auth-app": "^4.0.13",
-    "@octokit/rest": "^19.0.11"
+    "@octokit/auth-app": "^7.1.5",
+    "@octokit/rest": "^21.1.1"
   },
   "files": [
     "dist"

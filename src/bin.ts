@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 
 import {
   appCredentialsFromString,
   bundleAppCredentials,
   getTokenForOrg,
   getTokenForRepo,
-} from './';
+} from './index.js';
 
 const args = process.argv;
 
