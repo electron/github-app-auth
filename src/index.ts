@@ -95,6 +95,32 @@ export async function getAuthOptionsForOrg(
   );
 }
 
+export async function getAuthOptionsForEnterprise(
+  enterprise: string,
+  appCreds: AppCredentials,
+  authNarrowing: AuthNarrowing = {},
+  request?: RequestInterface,
+) {
+  return await getAuthOptionsForInstallationId(
+    appCreds,
+    authNarrowing,
+    async (octokit) => {
+      const installations = await octokit.paginate(octokit.apps.listInstallations);
+      for (const installation of installations) {
+        if (
+          installation.target_type === 'Enterprise' &&
+          installation.account?.slug === enterprise
+        ) {
+          return installation.id;
+        }
+      }
+
+      throw new Error('Failed to find installation for enterprise');
+    },
+    request,
+  );
+}
+
 async function getAuthOptionsForInstallationId(
   appCreds: AppCredentials,
   authNarrowing: AuthNarrowing = {},
