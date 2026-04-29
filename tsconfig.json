@@ -3,12 +3,9 @@
   "compilerOptions": {
     "declaration": true,
     "outDir": "dist",
+    "rootDir": "src",
     "sourceMap": true,
-    "types": [
-      "node"
-    ],
+    "types": ["node"]
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
